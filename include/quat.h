@@ -2,6 +2,9 @@
 
 #include "directions.h"
 
+#include <type_traits>
+
+
 template<std::floating_point T>
 struct quaternion
 {
@@ -16,11 +19,50 @@ public:
 	{
 		return quaternion{ w, -i, -j, -k };
 	}
+
+	template<typename U>
+	constexpr void assign_by_type(U const& u) requires std::floating_point<U> || is_directed_value<U>
+	{
+		if constexpr (std::floating_point<U>)
+		{
+			w = u;
+		}
+		else
+		{
+			[&u](auto&&... args)
+				{
+					auto assign = [&u] <typename T>(T & dest)
+					{
+						if constexpr (std::is_same_v<typename T::direction, typename U::direction>)
+						{
+							dest = T(u.value());
+						}
+					};
+					(assign(args), ...);
+				}(i, j, k);
+		}
+	}
 };
 
-template<typename T, typename U>
-constexpr quaternion<std::common_type_t<T, U>> operator*(quaternion<T> const& LHS, quaternion<U> const& RHS)
+template<typename stream_t, typename T>
+stream_t& operator<<(stream_t& os, quaternion<T> const& q)
 {
-
-	return {};
+	return os << "{ " << q.w << ", " << q.i.value() << "i, " << q.j.value() << "j, " << q.k.value() << "k}";
 }
+
+// plus or minus of different directions implicitly creates a quaternion
+// todo restrict to complex or vector
+
+//template<typename T, typename U>
+//auto operator+(T const& LHS, U const& RHS) requires !std::is_same<T, U>
+//{
+//
+//}
+
+
+//template<typename T, typename U>
+//constexpr quaternion<std::common_type_t<T, U>> operator*(quaternion<T> const& LHS, quaternion<U> const& RHS)
+//{
+//
+//	return {};
+//}

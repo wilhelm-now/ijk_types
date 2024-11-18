@@ -4,11 +4,13 @@
 #include <compare>
 
 
-template<std::floating_point T, typename direction>
+template<std::floating_point T, typename dir>
 class directed_value
 {
 	T val{0};
 public:
+	using direction = dir;
+
 	constexpr explicit directed_value(T v)
 		: val(v)
 	{}
@@ -20,6 +22,9 @@ public:
 		return val;
 	}
 };
+
+template<typename T>
+concept is_directed_value = requires { typename T::direction; };
 
 template<typename T, typename U, typename direction>
 using common_dir = directed_value<std::common_type_t<T, U>, direction>;
