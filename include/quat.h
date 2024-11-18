@@ -5,7 +5,7 @@
 template<std::floating_point T>
 struct quaternion
 {
-	W<T> w{0};
+	T w{0};
 	I<T> i{0};
 	J<T> j{0};
 	K<T> k{0};

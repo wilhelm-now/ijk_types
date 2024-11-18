@@ -51,7 +51,6 @@ using dir = directed_value<T, dir##_dir>; \
 NAME_DIRECTION(I)
 NAME_DIRECTION(J)
 NAME_DIRECTION(K)
-NAME_DIRECTION(W)  // TODO: decide if this needs a direction or should be a plain number
 
 // Now applying quaternion identities
 // ii == jj == kk == ijk == -1 (w in this case)
@@ -60,11 +59,11 @@ NAME_DIRECTION(W)  // TODO: decide if this needs a direction or should be a plai
 // j = -ik = ki
 // k = ij = -ji 
 
-// ii, jj, kk covered by requiring same direction tag for 
+// ii, jj, kk covered by requiring same direction tag for both arguments
 template<typename T, typename U, typename direction>
 constexpr auto operator*(directed_value<T, direction> const& LHS, directed_value<U, direction> const& RHS)
 {
-	return directed_value<std::common_type_t<T, U>, W_dir>(-LHS.value() * RHS.value());
+	return std::common_type_t<T, U>(-LHS.value() * RHS.value());
 }
 
 #define MULTIPLY_DIRS(LHS_T, RHS_T, RESULT_T, RESULT_SIGN) \

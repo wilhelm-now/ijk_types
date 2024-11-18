@@ -23,7 +23,7 @@ static_assert(plus_k * plus_i == plus_j, "ki = j");
 static_assert(plus_i * plus_j == plus_k, "ij = k");
 static_assert(plus_j * plus_i == -plus_k, "ji = -k");
 
-static_assert(plus_i * plus_j * plus_k == W{ -1. }, "still not sure if result should be a directed value");
+static_assert(plus_i * plus_j * plus_k ==  -1., "still not sure if result should be a directed value");
 
 // If it compiles it's ok
 int main(){}
