@@ -1,8 +1,10 @@
 #pragma once
 
 #include "directions.h"
+#include "type_help.h"
 
 #include <type_traits>
+
 
 
 template<std::floating_point T>
@@ -20,34 +22,27 @@ public:
 		return quaternion{ w, -i, -j, -k };
 	}
 
-	template<typename U>
-	constexpr void assign_by_type(U const& u) requires std::floating_point<U> || is_directed_value<U>
+	template<ijk::detail::direction_or_floating U>
+	constexpr void assign_by_type(U const& u)
 	{
-		if constexpr (std::floating_point<U>)
-		{
-			w = u;
-		}
-		else
-		{
-			[&u](auto&&... args)
+		[&u](auto&&... args)
+			{
+				auto assign = [&u]<typename T>(T & dest)
 				{
-					auto assign = [&u] <typename T>(T & dest)
+					if constexpr (std::is_same_v<ijk::detail::meta_direction<T>, ijk::detail::meta_direction<U>>)
 					{
-						if constexpr (std::is_same_v<typename T::direction, typename U::direction>)
-						{
-							dest = T(u.value());
-						}
-					};
-					(assign(args), ...);
-				}(i, j, k);
-		}
+						dest = std::remove_reference_t<decltype(dest)>{u};
+					}
+				};
+				(assign(args), ...);
+			}(w, i, j, k);
 	}
 };
 
 template<typename stream_t, typename T>
 stream_t& operator<<(stream_t& os, quaternion<T> const& q)
 {
-	return os << "{ " << q.w << ", " << q.i.value() << "i, " << q.j.value() << "j, " << q.k.value() << "k}";
+	return os << "{ " << q.w << ", " << q.i.value() << "i, " << q.j.value() << "j, " << q.k.value() << "k }";
 }
 
 // plus or minus of different directions implicitly creates a quaternion
