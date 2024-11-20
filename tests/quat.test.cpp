@@ -15,4 +15,17 @@ int main(){
 	q.assign_by_type(J{ 21.37 });
 
 	std::cout << q << '\n';
+
+	auto m = J{ 12.34 };
+	auto n = K{ 56.78f };
+	auto sum = m + n;
+	std::cout << sum << '\n';
+	
+	auto p = I{ 555.555 };
+	auto diff = n - p;
+	std::cout << diff << '\n';
+
+	auto more_parts = m + n + p;
+	std::cout << more_parts << '\n';
+	std::cout << sum + more_parts << '\n';
 }

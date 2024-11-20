@@ -17,6 +17,8 @@ struct quaternion
 
 public:
 
+	auto operator<=>(quaternion const&) const = default;
+
 	constexpr quaternion conjugate() const
 	{
 		return quaternion{ w, -i, -j, -k };
@@ -48,11 +50,59 @@ stream_t& operator<<(stream_t& os, quaternion<T> const& q)
 // plus or minus of different directions implicitly creates a quaternion
 // todo restrict to complex or vector
 
-//template<typename T, typename U>
-//auto operator+(T const& LHS, U const& RHS) requires !std::is_same_v<T, U>
-//{
-//
-//}
+template<ijk::detail::direction_or_floating T, ijk::detail::direction_or_floating U>
+requires (!ijk::detail::is_same_direction<T, U>)
+auto operator+(T const& LHS, U const& RHS)
+{
+	using value_t = std::common_type_t<ijk::detail::value_type<T>, ijk::detail::value_type<U>>;
+	quaternion<value_t> q{};
+	q.assign_by_type(LHS);
+	q.assign_by_type(RHS);
+	return q;
+}
+
+template<ijk::detail::direction_or_floating T, ijk::detail::direction_or_floating U>
+	requires (!ijk::detail::is_same_direction<T, U>)
+auto operator-(T const& LHS, U const& RHS)
+{
+	using value_t = std::common_type_t<ijk::detail::value_type<T>, ijk::detail::value_type<U>>;
+	quaternion<value_t> q{};
+	q.assign_by_type(LHS);
+	q.assign_by_type(-RHS);
+	return q;
+}
+
+template<typename T, ijk::detail::direction_or_floating U>
+auto operator+(quaternion<T> const& LHS, U const& RHS)
+{
+	using value_t = std::common_type_t<T, ijk::detail::value_type<U>>;
+	quaternion<value_t> q{.w = LHS.w, .i = LHS.i, .j = LHS.j, .k = LHS.k};
+	[&RHS](auto&&... args)
+		{
+			auto plus = [&RHS]<typename T>(T & lhs)
+			{
+				if constexpr (ijk::detail::is_same_direction<T, U>)
+				{
+					lhs = lhs + RHS;
+				}
+			};
+			(plus(args), ...);
+		}(q.w, q.i, q.j, q.k);
+	return q;
+}
+
+template<ijk::detail::direction_or_floating U, typename T>
+auto operator+(U const& LHS, quaternion<T> const& RHS)
+{
+	return RHS + LHS; // commutative addition
+}
+
+template<typename T, typename U>
+auto operator+(quaternion<T> const& LHS, quaternion<U> const& RHS)
+{
+	using value_t = std::common_type_t<T, U>;
+	return quaternion<value_t>{.w = LHS.w + RHS.w, .i = LHS.i + RHS.i, .j = LHS.j + RHS.j, .k = LHS.k + RHS.k};
+}
 
 
 //template<typename T, typename U>

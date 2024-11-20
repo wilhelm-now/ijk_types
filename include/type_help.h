@@ -24,5 +24,14 @@ namespace ijk
 
 		template<typename T, typename U>
 		concept is_same_direction = std::same_as<meta_direction<T>, meta_direction<U>>;
+
+		template<typename T>
+		struct get_value_type
+		{
+			using type = T::value_type;
+		};
+
+		template<direction_or_floating T>
+		using value_type = std::conditional_t<has_direction<T>, get_value_type<T>, std::type_identity<T>>::type;
 	}
 }
