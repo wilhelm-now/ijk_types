@@ -111,3 +111,15 @@ MULTIPLY_DIRS(I, K, J, -) // ik = -j
 MULTIPLY_DIRS(K, I, J, +) // ki = j
 MULTIPLY_DIRS(I, J, K, +) // ij = k
 MULTIPLY_DIRS(J, I, K, -) // ji = -k
+
+template<std::floating_point T, std::floating_point U, typename direction>
+constexpr auto operator*(T const& LHS, directed_value<U, direction> const& RHS)
+{
+	return directed_value<std::common_type_t<T, U>, direction>(LHS * RHS.value());
+}
+
+template<std::floating_point T, std::floating_point U, typename direction>
+constexpr auto operator*(directed_value<U, direction> const& LHS, T const& RHS)
+{
+	return directed_value<std::common_type_t<T, U>, direction>(RHS * LHS.value());
+}

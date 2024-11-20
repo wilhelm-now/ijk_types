@@ -28,4 +28,7 @@ int main(){
 	auto more_parts = m + n + p;
 	std::cout << more_parts << '\n';
 	std::cout << sum + more_parts << '\n';
+
+	auto product = sum * diff;
+	std::cout << "sum*diff=" << sum << "*" << diff << "\n\t=" << product << '\n';
 }

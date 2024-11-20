@@ -73,7 +73,7 @@ auto operator-(T const& LHS, U const& RHS)
 }
 
 template<typename T, ijk::detail::direction_or_floating U>
-auto operator+(quaternion<T> const& LHS, U const& RHS)
+constexpr auto operator+(quaternion<T> const& LHS, U const& RHS)
 {
 	using value_t = std::common_type_t<T, ijk::detail::value_type<U>>;
 	quaternion<value_t> q{.w = LHS.w, .i = LHS.i, .j = LHS.j, .k = LHS.k};
@@ -92,22 +92,30 @@ auto operator+(quaternion<T> const& LHS, U const& RHS)
 }
 
 template<ijk::detail::direction_or_floating U, typename T>
-auto operator+(U const& LHS, quaternion<T> const& RHS)
+constexpr auto operator+(U const& LHS, quaternion<T> const& RHS)
 {
 	return RHS + LHS; // commutative addition
 }
 
 template<typename T, typename U>
-auto operator+(quaternion<T> const& LHS, quaternion<U> const& RHS)
+constexpr auto operator+(quaternion<T> const& LHS, quaternion<U> const& RHS)
 {
 	using value_t = std::common_type_t<T, U>;
 	return quaternion<value_t>{.w = LHS.w + RHS.w, .i = LHS.i + RHS.i, .j = LHS.j + RHS.j, .k = LHS.k + RHS.k};
 }
 
 
-//template<typename T, typename U>
-//constexpr quaternion<std::common_type_t<T, U>> operator*(quaternion<T> const& LHS, quaternion<U> const& RHS)
-//{
-//
-//	return {};
-//}
+template<typename T, typename U>
+constexpr auto operator*(quaternion<T> const& LHS, quaternion<U> const& RHS)
+{
+	auto dir_times_q = [](ijk::detail::direction_or_floating auto lhs, auto const& rhs)
+		{
+			return (lhs * rhs.w) + (lhs * rhs.i) + (lhs * rhs.j) + (lhs* rhs.k);
+		};
+
+	auto impl = [dir_times_q](auto const& lhs, auto const& rhs)
+		{
+			return [&rhs, dir_times_q](auto&&... largs) { return (dir_times_q(largs, rhs) + ...); }(lhs.w, lhs.i, lhs.j, lhs.k);
+		};
+	return impl(LHS, RHS);
+}
