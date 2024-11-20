@@ -29,9 +29,9 @@ public:
 			{
 				auto assign = [&u]<typename T>(T & dest)
 				{
-					if constexpr (std::is_same_v<ijk::detail::meta_direction<T>, ijk::detail::meta_direction<U>>)
+					if constexpr (ijk::detail::is_same_direction<T, U>)
 					{
-						dest = std::remove_reference_t<decltype(dest)>{u};
+						dest = u;
 					}
 				};
 				(assign(args), ...);
@@ -49,7 +49,7 @@ stream_t& operator<<(stream_t& os, quaternion<T> const& q)
 // todo restrict to complex or vector
 
 //template<typename T, typename U>
-//auto operator+(T const& LHS, U const& RHS) requires !std::is_same<T, U>
+//auto operator+(T const& LHS, U const& RHS) requires !std::is_same_v<T, U>
 //{
 //
 //}

@@ -19,9 +19,30 @@ public:
 	{}
 
 	template<typename U>
-	constexpr explicit directed_value(directed_value<U, dir> const& u)
+	constexpr directed_value(directed_value<U, dir> const& u)
 		: val(u.value())
 	{}
+
+	template<typename U>
+	constexpr directed_value& operator=(directed_value<U, dir> const& u)
+	{
+		val = u.value();
+		return *this;
+	}
+
+	template<typename U>
+	constexpr directed_value(directed_value<U, dir>&& u)
+		: val(u.value())
+	{ }
+
+	template<typename U>
+	constexpr directed_value& operator=(directed_value<U, dir>&& u)
+	{
+		val = u.value(); // not expecting any gains from moving arithmetic types
+		return *this;
+	}
+
+	~directed_value() = default;
 
 	auto operator<=>(directed_value const&) const = default;
 

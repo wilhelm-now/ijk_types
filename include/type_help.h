@@ -21,5 +21,8 @@ namespace ijk
 
 		template<direction_or_floating T>
 		using meta_direction = std::conditional_t<has_direction<T>, get_direction<T>, std::type_identity<double>>::type; // double used as "direction" type of real axis
+
+		template<typename T, typename U>
+		concept is_same_direction = std::same_as<meta_direction<T>, meta_direction<U>>;
 	}
 }
