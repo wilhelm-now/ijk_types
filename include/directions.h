@@ -6,6 +6,7 @@
 #include <compare>
 
 
+
 template<std::floating_point T, typename dir>
 class directed_value
 {
@@ -79,6 +80,9 @@ constexpr common_dir<T, U, direction> operator-(directed_value<T, direction> con
 struct dir##_dir{}; \
 template<typename T> \
 using dir = directed_value<T, dir##_dir>; \
+namespace literals {\
+\
+}
 
 NAME_DIRECTION(I)
 NAME_DIRECTION(J)
@@ -95,14 +99,14 @@ NAME_DIRECTION(K)
 template<typename T, typename U, typename direction>
 constexpr auto operator*(directed_value<T, direction> const& LHS, directed_value<U, direction> const& RHS)
 {
-	return std::common_type_t<T, U>(-LHS.value() * RHS.value());
+	return -LHS.value() * RHS.value();
 }
 
 #define MULTIPLY_DIRS(LHS_T, RHS_T, RESULT_T, RESULT_SIGN) \
 template<typename T, typename U> \
 constexpr auto operator*(LHS_T<T> const& LHS, RHS_T<U> const& RHS) \
 { \
-	return RESULT_T<std::common_type_t<T, U>>(RESULT_SIGN LHS.value() * RHS.value()); \
+	return RESULT_T(RESULT_SIGN LHS.value() * RHS.value()); \
 }
 
 MULTIPLY_DIRS(J, K, I, +) // jk = i
