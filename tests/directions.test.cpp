@@ -1,5 +1,7 @@
 #include <directions.h>
 
+using namespace ijk;
+
 static_assert(true, "can compile");
 
 static constexpr auto plus_i = I{ 1. };
