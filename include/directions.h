@@ -79,15 +79,22 @@ namespace ijk {
 	}
 
 
-#define IJK_NAME_DIRECTION(dir) \
+#define IJK_NAME_DIRECTION(dir, literal_suffix) \
 struct dir##_dir{}; \
 template<typename T> \
 using dir = directed_value<T, dir##_dir>; \
+namespace literals {\
+	constexpr dir<double> operator""_##literal_suffix(long double value) { return dir<double>(static_cast<double>(value)); } \
+	consteval dir<double> operator""_##literal_suffix(unsigned long long value) { return dir<double>(static_cast<double>(value)); }\
+	constexpr dir<long double> operator""_##literal_suffix##l(long double value) { return dir<double>(static_cast<long double>(value)); } \
+	consteval dir<long double> operator""_##literal_suffix##l(unsigned long long value) { return dir<double>(static_cast<long double>(value)); }\
+	constexpr dir<float> operator""_##literal_suffix##f(long double value) { return dir<double>(static_cast<float>(value)); } \
+	consteval dir<float> operator""_##literal_suffix##f(unsigned long long value) { return dir<double>(static_cast<float>(value)); }\
+}
 
-
-	IJK_NAME_DIRECTION(I)
-	IJK_NAME_DIRECTION(J)
-	IJK_NAME_DIRECTION(K)
+	IJK_NAME_DIRECTION(I, i)
+	IJK_NAME_DIRECTION(J, j)
+	IJK_NAME_DIRECTION(K, k)
 
 		// Now applying quaternion identities
 		// ii == jj == kk == ijk == -1 (w in this case)

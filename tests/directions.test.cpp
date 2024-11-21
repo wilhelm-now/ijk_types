@@ -30,5 +30,12 @@ static_assert(plus_i * plus_j * plus_k ==  -1., "still not sure if result should
 static_assert(ijk::detail::has_direction<I<float>>);
 static_assert(!ijk::detail::has_direction<bool>);
 
+// literals
+using namespace ijk::literals;
+static_assert(plus_i == 1_i);
+static_assert(1_j * 1_k == 1_i);
+static_assert(1_i * 1_j * 1_k == -1.);
+static_assert(1_jf + 0_jl == 1_jl, "promotion from float to long double");
+
 // If it compiles it's ok
 int main(){}
