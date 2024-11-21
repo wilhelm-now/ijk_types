@@ -2,6 +2,7 @@
 #include <iostream>
 
 using namespace ijk;
+using namespace ijk::literals;
 
 static constexpr quat<double> q{};
 
@@ -9,6 +10,12 @@ constexpr auto b = std::is_floating_point_v<float>;
 
 static_assert(ijk::detail::has_direction<K<float>>);
 static_assert(std::is_same_v<ijk::detail::meta_direction<float>, double>);
+
+static constexpr auto qi = quat<double>{ .i = 1_i };
+static constexpr auto qj = quat<double>{ .j = 1_j };
+static constexpr auto qk = quat<double>{ .k = 1_k };
+static_assert(qi * qj == qk, "ij = k again but with quaternions that only have one component");
+static_assert(qj* qi == -qk);
 
 int main(){
 	ijk::quat<double> q{};

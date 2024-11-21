@@ -53,7 +53,7 @@ namespace ijk {
 
 	template<detail::direction_or_floating T, detail::direction_or_floating U>
 		requires (!detail::is_same_direction<T, U>)
-	auto operator+(T const& LHS, U const& RHS)
+	constexpr auto operator+(T const& LHS, U const& RHS)
 	{
 		using value_t = std::common_type_t<detail::value_type<T>, detail::value_type<U>>;
 		quat<value_t> q{};
@@ -64,13 +64,19 @@ namespace ijk {
 
 	template<detail::direction_or_floating T, detail::direction_or_floating U>
 		requires (!detail::is_same_direction<T, U>)
-	auto operator-(T const& LHS, U const& RHS)
+	constexpr auto operator-(T const& LHS, U const& RHS)
 	{
 		using value_t = std::common_type_t<detail::value_type<T>, detail::value_type<U>>;
 		quat<value_t> q{};
 		q.assign_by_type(LHS);
 		q.assign_by_type(-RHS);
 		return q;
+	}
+
+	template<typename T>
+	constexpr quat<T> operator-(quat<T> const& RHS)
+	{
+		return quat<T>{.w = -RHS.w, .i = -RHS.i, .j = -RHS.j, .k = -RHS.k};
 	}
 
 	template<typename T, detail::direction_or_floating U>
@@ -109,20 +115,15 @@ namespace ijk {
 	template<typename T, typename U>
 	constexpr auto operator*(quat<T> const& LHS, quat<U> const& RHS)
 	{
-		auto dir_times_q = [](detail::direction_or_floating auto lhs, auto const& rhs)
-			{
-				return (lhs * rhs.w) + (lhs * rhs.i) + (lhs * rhs.j) + (lhs * rhs.k);
-			};
 		auto first_times_tail = [](auto const& lhs, auto&&... args)
 			{
 				return ((lhs * args) + ...);
 			};
-
-		auto impl = [dir_times_q](auto const& lhs, auto const& rhs)
+		
+		return [first_times_tail, RHS](auto&&... largs)
 			{
-				return [&rhs, dir_times_q](auto&&... largs) { return (dir_times_q(largs, rhs) + ...); }(lhs.w, lhs.i, lhs.j, lhs.k);
-			};
-		return impl(LHS, RHS);
+				return (first_times_tail(largs, RHS.w, RHS.i, RHS.j, RHS.k) + ...);
+			}(LHS.w, LHS.i, LHS.j, LHS.k);
 	}
 
 } // namespace ijk
