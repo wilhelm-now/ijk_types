@@ -22,7 +22,7 @@ constexpr auto operator*(directed_value<T, direction> LHS, directed_value<U, dir
 template<typename T, typename U>
 constexpr auto operator*(I<T> LHS, J<T> RHS) { return K(LHS.value() * RHS.value()); }
 
-// kj = -1
+// kj = -i
 template<typename T, typename U>
 constexpr auto operator*(K<T> LHS, J<T> RHS) { return I(-LHS.value() * RHS.value()); }
 
