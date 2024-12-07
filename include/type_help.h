@@ -38,7 +38,7 @@ namespace ijk
 
 		// Returns a callable object to help do FOIL-like operations. 
 		// FOIL: First Inside Outside Last multiplication of (a + b)(c + d) = a*c + b*c + a*d + b*d
-		// To be used immediately like foiler(1, 2_i, 3_j, 4_k)(5, 6_i, 7_j, 8)
+		// To be used immediately like foiler(1, 2_i, 3_j, 4_k)(5, 6_i, 7_j, 8_k)
 		// to multiply the quaternions (1, 2i, 3j, 4k) and (5, 6i, 7j, 8k)
 		template<typename... LeftTypes>
 		constexpr auto foiler(LeftTypes&&... left_args)
