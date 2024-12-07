@@ -110,19 +110,19 @@ namespace literals {\
 		return -LHS.value() * RHS.value();
 	}
 
-#define MULTIPLY_DIRS(LHS_T, RHS_T, RESULT_T, RESULT_SIGN) \
+#define IJK_IMPLEMENT_DIRECTION_PRODUCT(LHS_T, RHS_T, RESULT_T, RESULT_SIGN) \
 template<typename T, typename U> \
 constexpr auto operator*(LHS_T<T> const& LHS, RHS_T<U> const& RHS) \
 { \
 	return RESULT_T(RESULT_SIGN LHS.value() * RHS.value()); \
 }
 
-	MULTIPLY_DIRS(J, K, I, +) // jk = i
-	MULTIPLY_DIRS(K, J, I, -) // kj = -i
-	MULTIPLY_DIRS(I, K, J, -) // ik = -j
-	MULTIPLY_DIRS(K, I, J, +) // ki = j
-	MULTIPLY_DIRS(I, J, K, +) // ij = k
-	MULTIPLY_DIRS(J, I, K, -) // ji = -k
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(J, K, I, +) // jk = i
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(K, J, I, -) // kj = -i
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(I, K, J, -) // ik = -j
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(K, I, J, +) // ki = j
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(I, J, K, +) // ij = k
+	IJK_IMPLEMENT_DIRECTION_PRODUCT(J, I, K, -) // ji = -k
 
 	template<std::floating_point T, std::floating_point U, typename direction>
 	constexpr auto operator*(T const& LHS, directed_value<U, direction> const& RHS)
