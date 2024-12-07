@@ -101,7 +101,7 @@ namespace ijk {
 	template<detail::direction_or_floating U, typename T>
 	constexpr auto operator+(U const& LHS, quat<T> const& RHS)
 	{
-		return RHS + LHS; // commutative addition
+		return RHS + LHS; // commutative addition, LHS + RHS = RHS + LHS
 	}
 
 	template<typename T, typename U>
@@ -115,15 +115,7 @@ namespace ijk {
 	template<typename T, typename U>
 	constexpr auto operator*(quat<T> const& LHS, quat<U> const& RHS)
 	{
-		auto first_times_tail = [](auto const& lhs, auto&&... args)
-			{
-				return ((lhs * args) + ...);
-			};
-		
-		return [first_times_tail, RHS](auto&&... largs)
-			{
-				return (first_times_tail(largs, RHS.w, RHS.i, RHS.j, RHS.k) + ...);
-			}(LHS.w, LHS.i, LHS.j, LHS.k);
+		return ijk::detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
 	}
 
 } // namespace ijk

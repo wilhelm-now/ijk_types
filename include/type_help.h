@@ -2,6 +2,8 @@
 
 #include <concepts>
 #include <type_traits>
+#include <utility>
+
 
 namespace ijk
 {
@@ -33,5 +35,27 @@ namespace ijk
 
 		template<direction_or_floating T>
 		using value_type = std::conditional_t<has_direction<T>, get_value_type<T>, std::type_identity<T>>::type;
+
+		// Returns a callable object to help do FOIL-like operations. 
+		// FOIL: First Inside Outside Last multiplication of (a + b)(c + d) = a*c + b*c + a*d + b*d
+		// To be used immediately like foiler(1, 2_i, 3_j, 4_k)(5, 6_i, 7_j, 8)
+		// to multiply the quaternions (1, 2i, 3j, 4k) and (5, 6i, 7j, 8k)
+		template<typename... LeftTypes>
+		constexpr auto foiler(LeftTypes&&... left_args)
+		{
+			// Function that multiplies a single right argument by all left arguments
+			auto left_multiply = [...largs = std::forward<LeftTypes>(left_args)](auto&& right)
+				{
+					return ((largs * right) + ...);
+				};
+
+			// Function that sums every left argument multiplied by every right argument
+			auto for_right_args = [left_multiply](auto&&... right_args)
+				{
+					return (left_multiply(right_args) + ...);
+				};
+
+			return for_right_args;
+		}
 	}
 }
