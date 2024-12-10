@@ -1,5 +1,6 @@
 foreach(TESTABLE
 	directions
+	complex
 	quat)
 	add_executable(test_${TESTABLE} "${TESTABLE}.test.cpp")
 	target_link_libraries(test_${TESTABLE} ijk)

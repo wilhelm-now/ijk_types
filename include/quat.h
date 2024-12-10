@@ -115,7 +115,7 @@ namespace ijk {
 	template<typename T, typename U>
 	constexpr auto operator*(quat<T> const& LHS, quat<U> const& RHS)
 	{
-		return ijk::detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
+		return detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
 	}
 
 } // namespace ijk

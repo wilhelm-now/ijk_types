@@ -84,11 +84,11 @@ struct dir##_dir{}; \
 template<typename T> \
 using dir = directed_value<T, dir##_dir>; \
 namespace literals {\
-	constexpr dir<double> operator""_##literal_suffix(long double value) { return dir<double>(static_cast<double>(value)); } \
+	consteval dir<double> operator""_##literal_suffix(long double value) { return dir<double>(static_cast<double>(value)); } \
 	consteval dir<double> operator""_##literal_suffix(unsigned long long value) { return dir<double>(static_cast<double>(value)); }\
-	constexpr dir<long double> operator""_##literal_suffix##l(long double value) { return dir<double>(static_cast<long double>(value)); } \
+	consteval dir<long double> operator""_##literal_suffix##l(long double value) { return dir<double>(static_cast<long double>(value)); } \
 	consteval dir<long double> operator""_##literal_suffix##l(unsigned long long value) { return dir<double>(static_cast<long double>(value)); }\
-	constexpr dir<float> operator""_##literal_suffix##f(long double value) { return dir<double>(static_cast<float>(value)); } \
+	consteval dir<float> operator""_##literal_suffix##f(long double value) { return dir<double>(static_cast<float>(value)); } \
 	consteval dir<float> operator""_##literal_suffix##f(unsigned long long value) { return dir<double>(static_cast<float>(value)); }\
 }
 
