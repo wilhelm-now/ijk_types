@@ -118,4 +118,16 @@ namespace ijk {
 		return detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
 	}
 
+	template<detail::direction_or_floating T, typename U>
+	constexpr auto operator*(T LHS, quat<U> const& RHS)
+	{
+		return detail::foiler(LHS)(RHS.w, RHS.i, RHS.j, RHS.k);
+	}
+
+	template<typename T, detail::direction_or_floating U>
+	constexpr auto operator*(quat<T> const& LHS, U RHS)
+	{
+		return detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS);
+	}
+
 } // namespace ijk

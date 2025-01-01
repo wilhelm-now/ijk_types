@@ -17,6 +17,20 @@ static constexpr auto qk = quat<double>{ .k = 1_k };
 static_assert(qi * qj == qk, "ij = k again but with quaternions that only have one component");
 static_assert(qj* qi == -qk);
 
+constexpr auto q1 = 1. + 2_i + 3_j + 4_k;
+constexpr auto q2 = 5. + 6_i + 7_j + 8_k;
+static_assert(q1 * q2 == -60. + 12_i + 30_j + 24_k);
+static_assert(q2 * q1 == -60. + 20_i + 14_j + 32_k);
+
+static_assert(2. * q1 == q1 + q1, "scalar multiplication");
+static_assert(q2 * 3. == q2 + q2 + q2, "more scalar multiplication");
+
+static_assert(qi * 1_j == qk, "ij = k but without quaternion right argument");
+static_assert(1_j * qi == -qk, "ji = -k without quaternion left argument");
+static_assert(1_i * 1_j == 1_k, "ij = k but still only using directed values not quaternions");
+static_assert(std::same_as<decltype(1_i * 1_j), ijk::K<double>>, "directed value multiplication gives another directed value instead of quaternion");
+static_assert(std::same_as<decltype(1_i * 2_i), double>, "but multiplication of same direction gives scalar");
+
 int main(){
 	ijk::quat<double> q{};
 	q.assign_by_type(123.456);
