@@ -17,6 +17,7 @@ namespace ijk {
 		K<T> k{ 0 };
 
 	public:
+		using value_type = T;
 
 		auto operator<=>(quat const&) const = default;
 

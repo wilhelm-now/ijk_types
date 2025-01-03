@@ -90,6 +90,10 @@ namespace literals {\
 	consteval dir<long double> operator""_##literal_suffix##l(unsigned long long value) { return dir<double>(static_cast<long double>(value)); }\
 	consteval dir<float> operator""_##literal_suffix##f(long double value) { return dir<double>(static_cast<float>(value)); } \
 	consteval dir<float> operator""_##literal_suffix##f(unsigned long long value) { return dir<double>(static_cast<float>(value)); }\
+}\
+namespace detail {\
+	template<typename T> \
+	concept is_##dir = has_direction<T> && std::same_as<typename T::direction, dir##_dir>; \
 }
 
 	IJK_NAME_DIRECTION(I, i)

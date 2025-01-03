@@ -33,8 +33,11 @@ namespace ijk
 			using type = T::value_type;
 		};
 
-		template<direction_or_floating T>
-		using value_type = std::conditional_t<has_direction<T>, get_value_type<T>, std::type_identity<T>>::type;
+		template<typename T>
+		concept has_value_type = requires {typename T::value_type; };
+
+		template<typename T>
+		using value_type = std::conditional_t<has_value_type<T>, get_value_type<T>, std::type_identity<T>>::type;
 
 		// Returns a callable object to help do FOIL-like operations. 
 		// FOIL: First Inside Outside Last multiplication of (a + b)(c + d) = a*c + b*c + a*d + b*d

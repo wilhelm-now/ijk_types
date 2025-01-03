@@ -31,5 +31,7 @@ static_assert(is_complex(comp * 1.f));
 static_assert(comp * 2.0 == 2.0 + 2_i);
 static_assert(3.f * comp == 3.0 + 3_i);
 
+static_assert(comp * 4_i == -4.0 + 4_i);
+static_assert(5_i * comp == -5.0 + 5_i);
 
 int main(){}
