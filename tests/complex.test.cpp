@@ -12,6 +12,8 @@ static_assert(!is_complex(3_i));
 
 static_assert(is_complex(123.456f + 3_i));
 static_assert(is_complex(-456_if + 789.0));
+static_assert(!is_complex(12.34 + 56.789f));
+static_assert(!is_complex(1_i + 2_if));
 
 static constexpr auto comp = 1.0 + 1_i;
 static_assert(is_complex(comp));

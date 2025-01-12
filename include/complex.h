@@ -30,7 +30,7 @@ namespace ijk {
 		concept is_complex = requires
 		{
 			typename T::value_type;
-			requires std::same_as<ijk::complex<typename T::value_type>, std::remove_cvref_t<T>>;
+			requires std::same_as<complex<typename T::value_type>, std::remove_cvref_t<T>>;
 		};
 
 		template<typename T>
@@ -49,7 +49,7 @@ namespace ijk {
 		{
 			if constexpr (is_complex<T>) { return maybe_imag.imag; }
 			else if constexpr (is_I<T>) { return maybe_imag; }
-			else { return ijk::I<T>{ 0. }; }
+			else { return I<T>{ 0 }; }
 		}
 	}
 
@@ -69,6 +69,15 @@ namespace ijk {
 			.imag = imag_or_zero(LHS) + imag_or_zero(RHS) };
 	}
 
+	template<detail::is_complexable T, detail::is_complexable U>
+	constexpr auto operator-(T const& LHS, U const& RHS)
+	{
+		using namespace detail;
+		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
+		return complex<value_t>{
+			.real = real_or_zero(LHS) - real_or_zero(RHS),
+			.imag = imag_or_zero(LHS) - imag_or_zero(RHS) };
+	}
 
 	template<detail::is_complexable T, detail::is_complexable U>
 	constexpr auto operator*(T const& LHS, U const& RHS)
