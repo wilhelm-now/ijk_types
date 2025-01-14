@@ -60,5 +60,26 @@ namespace ijk
 
 			return for_right_args;
 		}
+
+		// Similar to foiler, returns something immedieatly callable with values to assign to assignees.
+		template<typename... Assignees>
+		constexpr auto assigner_by_direction(Assignees&&... assignees)
+		{
+			auto assigner = [&](auto&& value) mutable
+				{
+					auto assign = [] <typename T, typename U>(T& dest, U&& right) {
+						if constexpr (is_same_direction<T, std::decay_t<U>>)
+						{
+							dest = std::forward<U>(right);
+						}
+					};
+					(assign(assignees, value), ...);
+				};
+
+			return [assigner](auto&&... values) mutable
+				{
+					(assigner(values), ...);
+				};
+		}
 	}
 }

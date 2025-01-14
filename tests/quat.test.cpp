@@ -15,7 +15,7 @@ static constexpr auto qi = quat<double>{ .i = 1_i };
 static constexpr auto qj = quat<double>{ .j = 1_j };
 static constexpr auto qk = quat<double>{ .k = 1_k };
 static_assert(qi * qj == qk, "ij = k again but with quaternions that only have one component");
-static_assert(qj* qi == -qk);
+static_assert(qj * qi == -qk);
 
 constexpr auto q1 = 1. + 2_i + 3_j + 4_k;
 constexpr auto q2 = 5. + 6_i + 7_j + 8_k;

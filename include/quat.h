@@ -29,17 +29,7 @@ namespace ijk {
 		template<detail::direction_or_floating U>
 		constexpr void assign_by_type(U const& u)
 		{
-			[&u](auto&&... args)
-				{
-					auto assign = [&u]<typename T>(T & dest)
-					{
-						if constexpr (detail::is_same_direction<T, U>)
-						{
-							dest = u;
-						}
-					};
-					(assign(args), ...);
-				}(w, i, j, k);
+			detail::assigner_by_direction(w, i, j, k)(u);
 		}
 	};
 
