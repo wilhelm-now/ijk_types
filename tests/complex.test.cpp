@@ -10,6 +10,11 @@ constexpr bool is_complex(ijk::complex<T>) { return true; }
 static_assert(!is_complex(123.456));
 static_assert(!is_complex(3_i));
 
+static_assert(is_complex(ijk::complex{ 1.0, 1_i }));
+static_assert(is_complex(ijk::complex{ 2_i, 0.5f }));
+static_assert(is_complex(ijk::complex{ 2_if }));
+static_assert(is_complex(ijk::complex{ 3.f }));
+
 static_assert(is_complex(123.456f + 3_i));
 static_assert(is_complex(-456_if + 789.0));
 static_assert(!is_complex(12.34 + 56.789f));

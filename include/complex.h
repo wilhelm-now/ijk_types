@@ -13,6 +13,12 @@ namespace ijk {
 		T real{ 0 };
 		I<T> imag{ 0 };
 
+		template<typename... Ts>
+		constexpr explicit complex(Ts&&... ts)
+		{
+			detail::assigner_by_direction(real, imag)(std::forward<Ts>(ts)...);
+		}
+
 		auto operator<=>(complex const&) const = default;
 
 		constexpr complex conjugate() const
@@ -53,6 +59,9 @@ namespace ijk {
 		}
 	}
 
+	template<detail::complex_direction... Ts>
+	complex(Ts...) -> complex<std::common_type_t<detail::value_type<std::remove_cvref_t<Ts>>...>>;
+	
 	template<typename stream_t, typename T>
 	stream_t& operator<<(stream_t& os, complex<T> const& z)
 	{
@@ -65,8 +74,8 @@ namespace ijk {
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
 		return complex<value_t>{
-			.real = real_or_zero(LHS) + real_or_zero(RHS), 
-			.imag = imag_or_zero(LHS) + imag_or_zero(RHS) };
+			real_or_zero(LHS) + real_or_zero(RHS), 
+			imag_or_zero(LHS) + imag_or_zero(RHS) };
 	}
 
 	template<detail::is_complexable T, detail::is_complexable U>
@@ -75,8 +84,8 @@ namespace ijk {
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
 		return complex<value_t>{
-			.real = real_or_zero(LHS) - real_or_zero(RHS),
-			.imag = imag_or_zero(LHS) - imag_or_zero(RHS) };
+			real_or_zero(LHS) - real_or_zero(RHS),
+			imag_or_zero(LHS) - imag_or_zero(RHS) };
 	}
 
 	template<detail::is_complexable T, detail::is_complexable U>
