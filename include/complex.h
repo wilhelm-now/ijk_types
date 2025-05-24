@@ -14,6 +14,7 @@ namespace ijk {
 		I<T> imag{ 0 };
 
 		template<typename... Ts>
+		requires (detail::unique_directions_v<Ts...> && sizeof...(Ts) < 3)
 		constexpr explicit complex(Ts&&... ts)
 		{
 			detail::assigner_by_direction(real, imag)(std::forward<Ts>(ts)...);
@@ -36,7 +37,7 @@ namespace ijk {
 		concept is_complex = requires
 		{
 			typename T::value_type;
-			requires std::same_as<complex<typename T::value_type>, std::remove_cvref_t<T>>;
+			requires std::same_as<complex<typename T::value_type>, T>;
 		};
 
 		template<typename T>
@@ -56,6 +57,12 @@ namespace ijk {
 			if constexpr (is_complex<T>) { return maybe_imag.imag; }
 			else if constexpr (is_I<T>) { return maybe_imag; }
 			else { return I<T>{ 0 }; }
+		}
+
+		template<typename F, typename T>
+		constexpr decltype(auto) apply(F&& f, complex<T> const& c)
+		{
+			return std::invoke(std::forward<F>(f), c.real, c.imag);
 		}
 	}
 
@@ -92,7 +99,7 @@ namespace ijk {
 	constexpr auto operator*(T const& LHS, U const& RHS)
 	{
 		using namespace detail;
-		return foiler(real_or_zero(LHS), imag_or_zero(LHS))(real_or_zero(RHS), imag_or_zero(RHS));
+		return apply(apply(foiler{}, LHS), RHS);
 	}
 
 } // ijk

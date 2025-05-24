@@ -33,6 +33,25 @@ namespace ijk {
 		}
 	};
 
+	namespace detail
+	{
+		template<typename T>
+		concept is_quat = requires
+		{
+			typename T::value_type;
+			requires std::same_as<quat<typename T::value_type>, T>;
+		};
+
+		template<typename T>
+		concept is_quatable = direction_or_floating<T> || is_quat<T>;
+
+		template<typename F, typename T>
+		constexpr auto apply(F&& f, quat<T> const& q)
+		{
+			return std::invoke(std::forward<F>(f), q.w, q.i, q.j, q.k);
+		}
+	}
+
 	template<typename stream_t, typename T>
 	stream_t& operator<<(stream_t& os, quat<T> const& q)
 	{
@@ -102,23 +121,11 @@ namespace ijk {
 		return quat<value_t>{.w = LHS.w + RHS.w, .i = LHS.i + RHS.i, .j = LHS.j + RHS.j, .k = LHS.k + RHS.k};
 	}
 
-
-	template<typename T, typename U>
-	constexpr auto operator*(quat<T> const& LHS, quat<U> const& RHS)
+	template<detail::is_quatable T, detail::is_quatable U>
+	constexpr auto operator*(T const& LHS, U const& RHS)
 	{
-		return detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
-	}
-
-	template<detail::direction_or_floating T, typename U>
-	constexpr auto operator*(T LHS, quat<U> const& RHS)
-	{
-		return detail::foiler(LHS)(RHS.w, RHS.i, RHS.j, RHS.k);
-	}
-
-	template<typename T, detail::direction_or_floating U>
-	constexpr auto operator*(quat<T> const& LHS, U RHS)
-	{
-		return detail::foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS);
+		using namespace detail;
+		return apply(apply(foiler{}, LHS), RHS);
 	}
 
 } // namespace ijk
