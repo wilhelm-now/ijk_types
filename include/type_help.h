@@ -108,5 +108,24 @@ namespace ijk
 					(assigner(values), ...);
 				};
 		}
+
+		template<typename applyable>
+		struct print_applyable
+		{
+			applyable const& value;
+		};
+
+		template<typename stream_t, typename T>
+		stream_t& operator<<(stream_t& stream, print_applyable<T> const& parent)
+		{
+			auto impl = [&stream]<typename head_t, typename... tail_t>(head_t && head, tail_t&&... tail)
+			{
+				stream << std::forward<head_t>(head);
+				((stream << ", " << std::forward<tail_t>(tail)), ...);
+			};
+			apply(impl, parent.value);
+			return stream;
+		}
+
 	}
 }
