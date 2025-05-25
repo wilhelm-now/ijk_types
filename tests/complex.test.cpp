@@ -41,4 +41,10 @@ static_assert(3.f * comp == 3.0 + 3_i);
 static_assert(comp * 4_i == -4.0 + 4_i);
 static_assert(5_i * comp == -5.0 + 5_i);
 
-int main(){}
+#include <iostream>
+
+int main()
+{
+	std::cout << comp << '\n';
+	std::cout << comp * comp << '\n';
+}

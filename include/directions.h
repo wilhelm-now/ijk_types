@@ -94,7 +94,10 @@ namespace literals {\
 namespace detail {\
 	template<typename T> \
 	concept is_##dir = has_direction<T> && std::same_as<typename T::direction, dir##_dir>; \
-}
+}\
+template<typename stream_t, typename T>\
+stream_t& operator<<(stream_t& os, directed_value<T, dir##_dir> directed)\
+{return os << directed.value() << #literal_suffix; }
 
 	IJK_NAME_DIRECTION(I, i)
 	IJK_NAME_DIRECTION(J, j)

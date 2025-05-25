@@ -72,7 +72,7 @@ namespace ijk {
 	template<typename stream_t, typename T>
 	stream_t& operator<<(stream_t& os, complex<T> const& z)
 	{
-		return os << "{ " << z.real << ", " << z.imag.value() << "i }";
+		return os << "{ " << z.real << ", " << z.imag << "}";
 	}
 
 	template<detail::is_complexable T, detail::is_complexable U>

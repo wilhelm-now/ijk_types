@@ -55,7 +55,7 @@ namespace ijk {
 	template<typename stream_t, typename T>
 	stream_t& operator<<(stream_t& os, quat<T> const& q)
 	{
-		return os << "{ " << q.w << ", " << q.i.value() << "i, " << q.j.value() << "j, " << q.k.value() << "k }";
+		return os << "{ " << q.w << ", " << q.i << ", " << q.j << ", " << q.k << "}";
 	}
 
 	// plus or minus of different directions implicitly creates a quaternion
