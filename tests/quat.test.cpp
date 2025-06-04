@@ -1,4 +1,4 @@
-#include <quat.h>
+#include <ijk/quat.h>
 #include <iostream>
 
 using namespace ijk;

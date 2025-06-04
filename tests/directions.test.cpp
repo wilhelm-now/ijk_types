@@ -1,4 +1,4 @@
-#include <directions.h>
+#include <ijk/directions.h>
 
 using namespace ijk;
 

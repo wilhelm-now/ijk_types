@@ -45,10 +45,15 @@ namespace ijk {
 		template<typename T>
 		concept is_quatable = direction_or_floating<T> || is_quat<T>;
 
-		template<typename F, typename T>
-		constexpr auto apply(F&& f, quat<T> const& q)
+		template<typename F, typename Q>
+		requires is_quat<std::remove_cvref_t<Q>>
+		constexpr decltype(auto) apply(F&& f, Q&& q)
 		{
-			return std::invoke(std::forward<F>(f), q.w, q.i, q.j, q.k);
+			return std::invoke(std::forward<F>(f), 
+				std::forward<Q>(q).w,
+				std::forward<Q>(q).i,
+				std::forward<Q>(q).j,
+				std::forward<Q>(q).k);
 		}
 	}
 

@@ -59,10 +59,13 @@ namespace ijk {
 			else { return I<T>{ 0 }; }
 		}
 
-		template<typename F, typename T>
-		constexpr decltype(auto) apply(F&& f, complex<T> const& c)
+		template<typename F, typename C>
+		requires is_complex<std::remove_cvref_t<C>>
+		constexpr decltype(auto) apply(F&& f, C&& c)
 		{
-			return std::invoke(std::forward<F>(f), c.real, c.imag);
+			return std::invoke(std::forward<F>(f), 
+				std::forward<C>(c).real, 
+				std::forward<C>(c).imag);
 		}
 	}
 
