@@ -54,6 +54,20 @@ namespace ijk {
 		{
 			return val;
 		}
+
+		template<typename U>
+		constexpr directed_value& operator+=(directed_value<U, dir> u)
+		{
+			val += u.value();
+			return *this;
+		}
+
+		template<typename U>
+		constexpr directed_value& operator-=(directed_value<U, dir> u)
+		{
+			val -= u.value();
+			return *this;
+		}
 	};
 
 

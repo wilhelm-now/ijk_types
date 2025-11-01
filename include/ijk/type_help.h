@@ -109,6 +109,33 @@ namespace ijk
 				};
 		}
 
+		template<typename Op>
+		struct bind_for_compatible_directions
+		{
+			[[no_unique_address]] Op op = Op{};
+
+			template<typename... BoundTypes>
+			constexpr auto operator()(BoundTypes&&... bound) const
+			{
+				auto impl = [&](auto&& arg) mutable
+				//auto impl = [this, ...bound = std::forward<BoundTypes>(bound)](auto&& arg) mutable
+					{
+						auto impl_impl = [this] <typename T, typename U>(T& bound_left, U && right)
+						{
+							if constexpr (is_same_direction<T, std::decay_t<U>>)
+							{
+								op(bound_left, right);
+							}
+						};
+						(impl_impl(bound, arg), ...);
+					};
+				return [impl](auto&&... args) mutable
+					{
+						(impl(args), ...);
+					};
+			}
+		};
+
 		template<typename applyable>
 		struct print_applyable
 		{

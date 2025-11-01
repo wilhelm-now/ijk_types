@@ -24,6 +24,8 @@ static constexpr auto comp = 1.0 + 1_i;
 static_assert(is_complex(comp));
 static_assert(is_complex(comp * comp));
 static_assert(is_complex(comp * comp.conjugate()));
+static_assert(is_complex(ijk::complex{ comp }));
+static_assert(is_complex(ijk::complex<double>{}));
 
 static_assert(is_complex(comp + 2_i));
 static_assert(is_complex(3_i + comp + 4_i));
