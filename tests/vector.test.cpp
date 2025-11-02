@@ -36,6 +36,9 @@ static_assert(e - e == ijk::vector<double>{});
 static_assert(e + e - e == e);
 static_assert(3_j + e - 3_j == e);
 
+static_assert(a + a + a == 3.0 * a);
+static_assert(a - a == b * 0.0f);
+
 
 #include <iostream>
 

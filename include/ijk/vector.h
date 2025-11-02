@@ -85,4 +85,17 @@ namespace ijk {
 		apply(apply(directed_subtract_assign, res), RHS);
 		return res;
 	}
+
+	template<std::floating_point T, detail::is_vector U>
+	constexpr auto operator*(T LHS, U RHS)
+	{
+		detail::apply([LHS](auto&... components) {((components *= LHS), ...); }, RHS);
+		return RHS;
+	}
+
+	template<std::floating_point T, detail::is_vector U>
+	constexpr auto operator*(U LHS, T RHS)
+	{
+		return RHS * LHS;
+	}
 }

@@ -68,6 +68,13 @@ namespace ijk {
 			val -= u.value();
 			return *this;
 		}
+
+		template<std::floating_point U>
+		constexpr directed_value& operator*=(U u)
+		{
+			val *= u;
+			return *this;
+		}
 	};
 
 
