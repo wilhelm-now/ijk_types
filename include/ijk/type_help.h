@@ -136,6 +136,9 @@ namespace ijk
 			}
 		};
 
+		constexpr auto directed_add_assign = bind_for_compatible_directions{ [] <typename U>(auto& LHS, U && RHS) { LHS += std::forward<U>(RHS); } };
+		constexpr auto directed_subtract_assign = bind_for_compatible_directions{ [] <typename U>(auto& LHS, U && RHS) { LHS -= std::forward<U>(RHS); } };
+
 		template<typename applyable>
 		struct print_applyable
 		{

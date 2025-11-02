@@ -68,13 +68,21 @@ namespace ijk {
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
 		vector<value_t> res{}; // zero = addidative identity value
 		
-		auto add_assign = []<typename T, typename U>(T & left, U && right)
-		{
-			left += std::forward<U>(right);
-		};
-		auto impl = apply(bind_for_compatible_directions{ add_assign }, res);
+		auto impl = apply(directed_add_assign, res);
 		apply(impl, LHS);
 		apply(impl, RHS);
+		return res;
+	}
+
+	template<typename T, typename U>
+	requires detail::is_vectorable<T> && detail::is_vectorable<U>
+	constexpr auto operator-(T const& LHS, U const& RHS)
+	{
+		using namespace detail;
+		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
+		vector<value_t> res{};
+		apply(apply(directed_add_assign, res), LHS);
+		apply(apply(directed_subtract_assign, res), RHS);
 		return res;
 	}
 }
