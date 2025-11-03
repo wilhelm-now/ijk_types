@@ -62,7 +62,7 @@ struct quat
 
 #### Addition and Multiplication
 
-For multiplcation we assume that any addition of values in different directions means creating a new quaternion. Adding a value `a` in the I direction with a value `b` in the K direction should create a new quaternion `q(w=0, i=a, j=0, k=b)`. Adding two different quaternions is simple component wise addition.
+For multiplication we assume that any addition of values in different directions means creating a new quaternion. Adding a value `a` in the I direction with a value `b` in the K direction should create a new quaternion `q(w=0, i=a, j=0, k=b)`. Adding two different quaternions is simple component wise addition.
 
 To multiply we use folds instead of for loops. First we create a function that binds each component of the left quaternion and sums the left-multiplication with a single argument. We then apply this function to each component of the right quaternion. 
 The implementation of this is put in a function called `foiler` which can take any number of left arguments and returns a function to be used with any number of right arguments. 
@@ -70,35 +70,72 @@ Using a helper function that takes a variadic number of arguments makes it easy 
 The name *foiler* comes from the well known first-outside-inside-last polynomial multiplication rule and is more familiar than the *grand sum of the outer product*.
 
 ```c++
-template<typename... LeftTypes>
-constexpr auto foiler(LeftTypes&&... left_args)
+struct foiler
 {
-	// Function that multiplies a single right argument by all left arguments
-	auto left_multiply = [...largs = std::forward<LeftTypes>(left_args)](auto&& right)
-		{
-			return ((largs * right) + ...);
-		};
+	template<typename... LeftTypes>
+	constexpr auto operator()(LeftTypes&&... left_args) const
+	{
+		// Function that multiplies a single right argument by all left arguments
+		auto left_multiply = [...largs = std::forward<LeftTypes>(left_args)](auto&& right)
+			{
+				return ((largs * right) + ...);
+			};
 
-	// Function that sums every left argument multiplied by every right argument
-	auto for_right_args = [left_multiply](auto&&... right_args)
-		{
-			return (left_multiply(right_args) + ...);
-		};
+		// Function that sums every left argument multiplied by every right argument
+		auto for_right_args = [left_multiply](auto&&... right_args)
+			{
+				return (left_multiply(right_args) + ...);
+			};
 
-	return for_right_args;
-}
+		return for_right_args;
+	}
+};
 
 // quaternion * quaternion
 template<typename T, typename U>
 constexpr auto operator*(quat<T> const& LHS, quat<T> const& RHS)
 {
-	return foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
+	return foiler{}(LHS.w, LHS.i, LHS.j, LHS.k)(RHS.w, RHS.i, RHS.j, RHS.k);
 }
 
 // quaternion * scalar or directed value
 template<typename T, directed_or_numeric U>
 constexpr auto operator*(quat<T> const& LHS, U RHS)
 {
-	return foiler(LHS.w, LHS.i, LHS.j, LHS.k)(RHS);
+	return foiler{}(LHS.w, LHS.i, LHS.j, LHS.k)(RHS);
+}
+```
+
+If we define our own `apply` function in the same spirit as `std::apply` for numbers, directions and quaternions we can reduce the number of overloads we write.
+
+```
+template<typename F, std::floating_point T>
+constexpr auto apply(F&& f, T number) 
+{
+	return std::invoke(std::forward<F>(f), number);
+}
+
+// Single direction
+template<typename F, typename Rep, typename Direction>
+constexpr auto apply(F&& f, directed_value<Rep, Direction>>&& directed)
+{
+	return std::invoke(std::forward<F>(f), std::forward<directed_value<Rep, Direction>>(directed));
+}
+
+template<typename F, typename Rep>
+constexpr auto apply(F&& f, quat<Rep>&& q)
+{
+	return std::invoke(std::forward<F>(f),
+		std::forward<quat<Rep>>(q).w, std::forward<quat<Rep>>(q).x, std::forward<quat<Rep>>(q).y, std::forward<quat<Rep>>(q).z);
+}
+```
+
+This is why `foiler` is a struct instead of function. With nested applies we lose some of the expressiveness of adjacent parenthesis. However we now have one function template which allows us to multiply quaternions by scalars and any directed value. This is fun.
+
+```
+template<quaternion_enough T, quaternion_enough U>
+constexpr auto operator*(T const& LHS, T const& RHS)
+{
+	return apply(apply(foiler{}, LHS), RHS);
 }
 ```
