@@ -108,7 +108,7 @@ constexpr auto operator*(quat<T> const& LHS, U RHS)
 
 If we define our own `apply` function in the same spirit as `std::apply` for numbers, directions and quaternions we can reduce the number of overloads we write.
 
-```
+```c++
 template<typename F, std::floating_point T>
 constexpr auto apply(F&& f, T number) 
 {
@@ -130,9 +130,9 @@ constexpr auto apply(F&& f, quat<Rep>&& q)
 }
 ```
 
-This is why `foiler` is a struct instead of function. With nested applies we lose some of the expressiveness of adjacent parenthesis. However we now have one function template which allows us to multiply quaternions by scalars and any directed value. This is fun.
+This is why `foiler` is a struct instead of function. With nested applies we lose some of the expressiveness of adjacent parentheses. However we now have one function template which allows us to multiply quaternions by scalars and any directed value. This is fun.
 
-```
+```c++
 template<quaternion_enough T, quaternion_enough U>
 constexpr auto operator*(T const& LHS, T const& RHS)
 {
