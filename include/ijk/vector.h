@@ -98,4 +98,10 @@ namespace ijk {
 	{
 		return RHS * LHS;
 	}
+
+	template<detail::is_vector T, std::floating_point U>
+	constexpr auto operator/(T LHS, U RHS)
+	{
+		return LHS * (U{ 1.0 } / RHS);
+	}
 }

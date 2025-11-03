@@ -39,6 +39,8 @@ static_assert(3_j + e - 3_j == e);
 static_assert(a + a + a == 3.0 * a);
 static_assert(a - a == b * 0.0f);
 
+static_assert(a / 1.0 == a);
+static_assert((c + c) / 2.0 == c);
 
 #include <iostream>
 
