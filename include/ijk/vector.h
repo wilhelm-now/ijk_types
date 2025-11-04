@@ -4,25 +4,7 @@
 #include "type_help.h"
 
 namespace ijk {
-
-	template<std::floating_point T>
-	struct vector
-	{
-		using value_type = T;
-
-		I<T> x{0};
-		J<T> y{0};
-		K<T> z{0};
-
-		template<typename... Ts>
-			requires (detail::unique_directions_v<Ts...> && sizeof...(Ts) < 4)
-		constexpr explicit vector(Ts&&... ts)
-		{
-			detail::assigner_by_direction(x, y, z)(std::forward<Ts>(ts)...);
-		}
-
-		auto operator<=>(vector const&) const = default;
-	};
+	template<std::floating_point T> struct vector;
 
 	namespace detail
 	{
@@ -50,6 +32,35 @@ namespace ijk {
 		}
 	}
 
+	template<std::floating_point T>
+	struct vector
+	{
+		using value_type = T;
+
+		I<T> x{0};
+		J<T> y{0};
+		K<T> z{0};
+
+		constexpr vector() = default;
+
+		template<typename U>
+		constexpr vector(vector<U> const& other)
+			: x(other.x)
+			, y(other.y)
+			, z(other.z)
+		{ }
+
+		template<typename... Ts>
+			requires (detail::unique_directions_v<Ts...> && sizeof...(Ts) < 4)
+		constexpr explicit vector(Ts&&... ts)
+		{
+			auto assigner = detail::assigner_by_direction(x, y, z);
+			(detail::apply(assigner, std::forward<Ts>(ts)), ...);
+		}
+
+		auto operator<=>(vector const&) const = default;
+	};
+
 	template<detail::vector_direction... Ts>
 	vector(Ts...) -> vector<std::common_type_t<detail::value_type<std::remove_cvref_t<Ts>>...>>;
 
@@ -66,11 +77,8 @@ namespace ijk {
 	{
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
-		vector<value_t> res{}; // zero = addidative identity value
-		
-		auto impl = apply(directed_add_assign, res);
-		apply(impl, LHS);
-		apply(impl, RHS);
+		vector<value_t> res{LHS};
+		apply(apply(directed_add_assign, res), RHS);
 		return res;
 	}
 
@@ -80,8 +88,7 @@ namespace ijk {
 	{
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
-		vector<value_t> res{};
-		apply(apply(directed_add_assign, res), LHS);
+		vector<value_t> res{LHS};
 		apply(apply(directed_subtract_assign, res), RHS);
 		return res;
 	}

@@ -95,6 +95,7 @@ namespace ijk
 			auto assigner = [&](auto&& value) mutable
 				{
 					auto assign = [] <typename T, typename U>(T& dest, U&& right) {
+						static_assert(direction_or_floating<std::remove_cvref_t<U>>, "Right argument is directed value or number");
 						if constexpr (is_same_direction<T, std::decay_t<U>>)
 						{
 							dest = std::forward<U>(right);

@@ -42,6 +42,15 @@ static_assert(a - a == b * 0.0f);
 static_assert(a / 1.0 == a);
 static_assert((c + c) / 2.0 == c);
 
+// converting representation type constructor is fine
+// allows simple vector<common_type...> for operators
+constexpr ijk::vector<double> vec_d{ 3_i, 2_k, 1_j };
+constexpr ijk::vector<float> vec_f{ vec_d };
+static_assert(vec_f.x.value() == vec_d.x.value());
+static_assert(vec_f.y.value() == vec_d.y.value());
+static_assert(vec_f.z.value() == vec_d.z.value());
+
+
 #include <iostream>
 
 int main()
