@@ -88,28 +88,6 @@ namespace ijk
 			}
 		};
 
-		// Similar to foiler, returns something immedieatly callable with values to assign to assignees.
-		template<typename... Assignees>
-		constexpr auto assigner_by_direction(Assignees&&... assignees)
-		{
-			auto assigner = [&](auto&& value) mutable
-				{
-					auto assign = [] <typename T, typename U>(T& dest, U&& right) {
-						static_assert(direction_or_floating<std::remove_cvref_t<U>>, "Right argument is directed value or number");
-						if constexpr (is_same_direction<T, std::decay_t<U>>)
-						{
-							dest = std::forward<U>(right);
-						}
-					};
-					(assign(assignees, value), ...);
-				};
-
-			return [assigner](auto&&... values) mutable
-				{
-					(assigner(values), ...);
-				};
-		}
-
 		template<typename Op>
 		struct bind_for_compatible_directions
 		{
@@ -119,7 +97,6 @@ namespace ijk
 			constexpr auto operator()(BoundTypes&&... bound) const
 			{
 				auto impl = [&](auto&& arg) mutable
-				//auto impl = [this, ...bound = std::forward<BoundTypes>(bound)](auto&& arg) mutable
 					{
 						auto impl_impl = [this] <typename T, typename U>(T& bound_left, U && right)
 						{
@@ -139,6 +116,19 @@ namespace ijk
 
 		constexpr auto directed_add_assign = bind_for_compatible_directions{ [] <typename U>(auto& LHS, U && RHS) { LHS += std::forward<U>(RHS); } };
 		constexpr auto directed_subtract_assign = bind_for_compatible_directions{ [] <typename U>(auto& LHS, U && RHS) { LHS -= std::forward<U>(RHS); } };
+
+		template<typename... Assignees>
+		constexpr auto assigner_by_direction(Assignees&&... lefts)
+		{
+			auto impl = bind_for_compatible_directions{ [] <typename U>(auto& LHS, U && RHS)
+			{
+				LHS = std::forward<U>(RHS);
+			} }(std::forward<Assignees>(lefts)...);
+			return [impl]<typename... Ts>(Ts&&... rights) mutable
+			{
+				((apply(impl, rights)), ...);
+			};
+		}
 
 		template<typename applyable>
 		struct print_applyable

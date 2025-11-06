@@ -6,6 +6,34 @@
 
 namespace ijk {
 	template<std::floating_point T>
+	struct complex;
+
+	namespace detail
+	{
+		template<typename T>
+		concept complex_direction = std::floating_point<T> || is_I<T>;
+
+		template<typename T>
+		concept is_complex = requires
+		{
+			typename T::value_type;
+			requires std::same_as<complex<typename T::value_type>, T>;
+		};
+
+		template<typename T>
+		concept is_complexable = complex_direction<T> || is_complex<T>;
+
+		template<typename F, typename C>
+		requires is_complex<std::remove_cvref_t<C>>
+		constexpr decltype(auto) apply(F&& f, C&& c)
+		{
+			return std::invoke(std::forward<F>(f),
+				std::forward<C>(c).real,
+				std::forward<C>(c).imag);
+		}
+	}
+
+	template<std::floating_point T>
 	struct complex
 	{
 		using value_type = T;
@@ -28,47 +56,6 @@ namespace ijk {
 		}
 	};
 
-	namespace detail
-	{
-		template<typename T>
-		concept complex_direction = std::floating_point<T> || is_I<T>;
-
-		template<typename T>
-		concept is_complex = requires
-		{
-			typename T::value_type;
-			requires std::same_as<complex<typename T::value_type>, T>;
-		};
-
-		template<typename T>
-		concept is_complexable = complex_direction<T> || is_complex<T>;
-
-		template<is_complexable T>
-		constexpr auto real_or_zero(T const& maybe_real)
-		{
-			if constexpr (is_complex<T>) { return maybe_real.real; }
-			else if constexpr (is_I<T>) { return typename T::value_type{0}; }
-			else { return maybe_real; }
-		}
-
-		template<is_complexable T>
-		constexpr auto imag_or_zero(T const& maybe_imag)
-		{
-			if constexpr (is_complex<T>) { return maybe_imag.imag; }
-			else if constexpr (is_I<T>) { return maybe_imag; }
-			else { return I<T>{ 0 }; }
-		}
-
-		template<typename F, typename C>
-		requires is_complex<std::remove_cvref_t<C>>
-		constexpr decltype(auto) apply(F&& f, C&& c)
-		{
-			return std::invoke(std::forward<F>(f), 
-				std::forward<C>(c).real, 
-				std::forward<C>(c).imag);
-		}
-	}
-
 	template<detail::complex_direction... Ts>
 	complex(Ts...) -> complex<std::common_type_t<detail::value_type<std::remove_cvref_t<Ts>>...>>;
 	
@@ -83,9 +70,9 @@ namespace ijk {
 	{
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
-		return complex<value_t>{
-			real_or_zero(LHS) + real_or_zero(RHS), 
-			imag_or_zero(LHS) + imag_or_zero(RHS) };
+		complex<value_t> res{ LHS };
+		apply(apply(directed_add_assign, res), RHS);
+		return res;
 	}
 
 	template<detail::is_complexable T, detail::is_complexable U>
@@ -93,9 +80,9 @@ namespace ijk {
 	{
 		using namespace detail;
 		using value_t = std::common_type_t<value_type<T>, value_type<U>>;
-		return complex<value_t>{
-			real_or_zero(LHS) - real_or_zero(RHS),
-			imag_or_zero(LHS) - imag_or_zero(RHS) };
+		complex<value_t> res{ LHS };
+		apply(apply(directed_subtract_assign, res), RHS);
+		return res;
 	}
 
 	template<detail::is_complexable T, detail::is_complexable U>
