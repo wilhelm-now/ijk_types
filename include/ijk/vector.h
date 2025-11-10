@@ -54,8 +54,7 @@ namespace ijk {
 			requires (detail::unique_directions_v<Ts...> && sizeof...(Ts) < 4)
 		constexpr explicit vector(Ts&&... ts)
 		{
-			auto assigner = detail::assigner_by_direction(x, y, z);
-			(detail::apply(assigner, std::forward<Ts>(ts)), ...);
+			detail::assigner_by_direction(x, y, z)(std::forward<Ts>(ts)...);
 		}
 
 		auto operator<=>(vector const&) const = default;

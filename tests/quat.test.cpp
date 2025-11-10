@@ -11,9 +11,9 @@ constexpr auto b = std::is_floating_point_v<float>;
 static_assert(ijk::detail::has_direction<K<float>>);
 static_assert(std::is_same_v<ijk::detail::meta_direction<float>, double>);
 
-static constexpr auto qi = quat<double>{ .i = 1_i };
-static constexpr auto qj = quat<double>{ .j = 1_j };
-static constexpr auto qk = quat<double>{ .k = 1_k };
+static constexpr auto qi = quat<double>{ 1_i };
+static constexpr auto qj = quat<double>{ 1_j };
+static constexpr auto qk = quat<double>{ 1_k };
 static_assert(qi * qj == qk, "ij = k again but with quaternions that only have one component");
 static_assert(qj * qi == -qk);
 
@@ -32,10 +32,7 @@ static_assert(std::same_as<decltype(1_i * 1_j), ijk::K<double>>, "directed value
 static_assert(std::same_as<decltype(1_i * 2_i), double>, "but multiplication of same direction gives scalar");
 
 int main(){
-	ijk::quat<double> q{};
-	q.assign_by_type(123.456);
-	q.assign_by_type(K{ 789.f });
-	q.assign_by_type(J{ 21.37 });
+	ijk::quat<double> q{ 123.456, K{ 789.f }, J{ 21.37 } };
 
 	std::cout << q << '\n';
 
@@ -54,4 +51,8 @@ int main(){
 
 	auto product = sum * diff;
 	std::cout << "sum*diff=" << sum << "*" << diff << "\n\t=" << product << '\n';
+
+	constexpr auto v = ijk::vector{ 1_i, 3_k, 2_jl };
+	constexpr auto qv = ijk::quat{ v, 10.f };
+	std::cout << "vector: " << v << ", vector and real: " << qv << '\n';
 }
